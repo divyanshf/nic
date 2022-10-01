@@ -35,7 +35,7 @@ class GA:
         return self.fitnesses
     
     # Calcualte Probabilities for each soln depending on fitness
-    def calculateProbabilities(self):
+    def calculateProbabilitiesRoulette(self):
         self.prob_selection = []
         total_fitness = np.sum(self.fitnesses)
         for i in range(self.sample_size):

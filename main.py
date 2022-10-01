@@ -19,7 +19,7 @@ def main():
         # calcualte fitness
         ga.calculateFitnesses()
         # calculate probability
-        ga.calculateProbabilities()
+        ga.calculateProbabilitiesRoulette()
         # Select parents and crossover
         children = ga.select()
         # Mutate the children
