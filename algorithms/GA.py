@@ -11,7 +11,7 @@ class GA:
         self.dimension = dimension
         self.population = []
         self.bounds = bounds
-        self.soln_len = 12
+        self.soln_len = 24
         self.fitnesses = [0 for _ in range(sample_size)]
         self.prob_selection = []
         self.prob_crossover = 0.5
