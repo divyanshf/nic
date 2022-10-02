@@ -1,37 +1,43 @@
+from functions.Ackley import Ackley
 from functions.Rastrigin import Rastrigin
 from algorithms.GA import GA
+from functions.Rosenbrock import Rosenbrock
+from functions.Sphere import Sphere
+import pandas as pd
 
-dimension = 2
-population_size = 100
-bounds = [-5.12, 5.12]
 
+# Main
 def main():
-    fx = Rastrigin(dimension)
-    ga = GA(fx, dimension, population_size, bounds)
 
-    # Initialize Population
-    ga.initializePopulation()
+    rows = ['Rastrigin', 'Ackley', 'Sphere', 'Rosenbrock']
+    cols = ['Solution', 'Optimal Value']
+    all_solns = []
 
-    iterations = 1000
+    # Rastrigin
+    rastrigin = Rastrigin(2, [-5.12, 5.12])
+    x, o = rastrigin.optimizeUsingGA()
+    all_solns.append([x, o])
 
-    # Generations
-    for _ in range(iterations):
-        # calcualte fitness
-        ga.calculateFitnesses()
-        # calculate probability
-        ga.calculateProbabilitiesRoulette()
-        # Select parents and crossover
-        children = ga.select()
-        # Mutate the children
-        mutated_children = ga.mutate(children)
-        # Generation Update
-        ga.updateGeneration(mutated_children)
-    
-    X_res = ga.getResult()
-    opt_value = fx.eval(X_res)
-    print(X_res, '\n')
-    print(opt_value)
-    
+    # # # Ackley
+    ackley = Ackley(2, [-5, 5])
+    x, o = ackley.optimizeUsingGA()
+    all_solns.append([x, o])
+
+
+    # # Sphere
+    sphere = Sphere(2, [-10000, 10000])
+    x, o = sphere.optimizeUsingGA()
+    all_solns.append([x, o])
+
+    # # Rosenbrock
+    rosen = Rosenbrock(2, [-10000, 10000])
+    x, o = rosen.optimizeUsingGA()
+    all_solns.append([x, o])
+
+    # Display
+    df = pd.DataFrame(all_solns, index=rows, columns=cols)
+    print(df)
+
 
 if __name__ == '__main__':
     main()

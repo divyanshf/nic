@@ -5,25 +5,27 @@
 import numpy as np
 
 class GA:
-    def __init__(self, objective_function, dimension, sample_size, bounds):
+    def __init__(self, objective_function, dimension, sample_size, bounds, soln_len, var_len, prob_crossover, prob_mutation):
         self.objective_function = objective_function
         self.sample_size = sample_size
         self.dimension = dimension
         self.population = []
         self.bounds = bounds
-        self.soln_len = 24
+        self.soln_len = soln_len
+        self.var_len = var_len
         self.fitnesses = [0 for _ in range(sample_size)]
         self.prob_selection = []
-        self.prob_crossover = 0.5
-        self.prob_mutation = 0.05
+        self.prob_crossover = prob_crossover
+        self.prob_mutation = prob_mutation
 
     # Initialize population randomly
     def initializePopulation(self):
         self.population = []
         for i in range(self.sample_size):
-            x = np.random.random_integers(0, 2 ** self.soln_len)
+            x = []
+            for j in range(self.dimension):
+                x.append(np.random.random_integers(0, (2 ** self.var_len) - 1))
             self.population.append(self.encode(x))
-        return self.population
     
     # Calculate Fitness for all population
     def calculateFitnesses(self):
@@ -32,7 +34,6 @@ class GA:
             X = self.getVariables(soln) #   x1, x2, ... xn
             fit = self.objective_function.getFitness(X)
             self.fitnesses.append(fit);
-        return self.fitnesses
     
     # Calcualte Probabilities for each soln depending on fitness
     def calculateProbabilitiesRoulette(self):
@@ -45,7 +46,7 @@ class GA:
     def select(self):
         children = []
         for _ in range(int(self.sample_size / 2)):
-            rnd = np.random.random_integers(0,1)
+            rnd = np.random.uniform(0,1)
             pind1 = np.random.choice(self.sample_size, p=self.prob_selection)
             pind2 = np.random.choice(self.sample_size, p=self.prob_selection)
             if rnd > self.prob_crossover:
@@ -82,9 +83,8 @@ class GA:
     # Get all dimensional variables from the solution string
     def getVariables(self, soln):
         X = []
-        var_len = int(self.soln_len / self.dimension)
-        for i in range(0, self.soln_len, var_len):
-            X.append(self.decodeString(soln[i:i+var_len]))
+        for i in range(0, self.soln_len, self.var_len):
+            X.append(self.decodeString(soln[i:i+self.var_len]))
         return X
     
     # Update generation
@@ -99,19 +99,22 @@ class GA:
         return res
 
     # Encode value to binary string
-    def encode(self, x):
-        s = bin(x).replace("0b", "")
-        remain = self.soln_len - len(s)
-        for _ in range(remain):
-            s = '0' + s;
+    def encode(self, X):
+        s = ""
+        for x in X:
+            t = bin(x).replace("0b", "")
+            remain = self.var_len - len(s)
+            for _ in range(remain):
+                t = '0' + t;
+            s += t;
         return s
 
     # Decode binary string to value in bounds
     def decodeString(self, var_string):
-        mask = 1
+        mask = np.int64(1)
         temp = 0
         for ch in reversed(var_string):
             temp += mask * (ch == '1')
             mask <<= 1
-        return self.bounds[0] + ((self.bounds[1] - self.bounds[0]) / (2**(self.soln_len / self.dimension) - 1)) * temp
+        return self.bounds[0] + ((self.bounds[1] - self.bounds[0]) / ((2**self.var_len) - 1)) * temp
     
