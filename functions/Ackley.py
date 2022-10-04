@@ -13,6 +13,7 @@ class Ackley(Function):
 
     # Evaluate function
     def eval(self, X):
-        t1 = -20 * (math.e ** (-0.2 * math.sqrt(0.5 * (np.sum([x*x for x in X])))))
-        t2 = math.e ** (0.5 * np.sum([math.cos(2 * math.pi * x) for x in X]))
-        return t1 - t2 + math.e + 20
+        t1 = -20 * (math.exp(-0.2 * (math.sqrt(0.5 * (np.sum([x*x for x in X]))))))
+        t2 = -(math.exp(0.5 * (np.sum([math.cos(2 * math.pi * x) for x in X]))))
+        res = t1 + t2 + math.e + 20
+        return res

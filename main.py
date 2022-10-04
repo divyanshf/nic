@@ -9,35 +9,41 @@ import pandas as pd
 # Main
 def main():
 
-    rows = ['Rastrigin', 'Ackley', 'Sphere', 'Rosenbrock']
-    cols = ['Solution', 'Optimal Value']
-    all_solns = []
-
     # Rastrigin
     rastrigin = Rastrigin(2, [-5.12, 5.12])
-    x, o = rastrigin.optimizeUsingGA()
-    all_solns.append([x, o])
+    # x, o = rastrigin.optimizeUsingGA(population_size=100, iterations=1000)
+    x, o = rastrigin.optimizeUsingDE(population_size=100, iterations=1000)
+    print('Solution :')
+    print(x)
+    print('Optimal Value :')
+    print(o, '\n')
 
-    # # # Ackley
-    ackley = Ackley(2, [-5, 5])
-    x, o = ackley.optimizeUsingGA()
-    all_solns.append([x, o])
-
+    # # Ackley
+    # ackley = Ackley(2, [-5, 5])
+    # # x, o = ackley.optimizeUsingGA(population_size=100, iterations=1000)
+    # x, o = ackley.optimizeUsingDE(population_size=1000, iterations=1000)
+    # print('\nSolution :')
+    # print(x)
+    # print('Optimal Value :')
+    # print(o)
 
     # # Sphere
-    sphere = Sphere(2, [-10000, 10000])
-    x, o = sphere.optimizeUsingGA()
-    all_solns.append([x, o])
-
-    # # Rosenbrock
-    rosen = Rosenbrock(2, [-10000, 10000])
-    x, o = rosen.optimizeUsingGA()
-    all_solns.append([x, o])
-
-    # Display
-    df = pd.DataFrame(all_solns, index=rows, columns=cols)
-    print(df)
-
+    # sphere = Sphere(2, [-100, 100])
+    # # x, o = sphere.optimizeUsingGA(population_size=200, iterations=1000)
+    # x, o = sphere.optimizeUsingDE(population_size=1000, iterations=1000)
+    # print('\nSolution :')
+    # print(x)
+    # print('Optimal Value :')
+    # print(o)
+    
+    # # # Rosenbrock
+    # rosen = Rosenbrock(2, [-100, 100])
+    # # x, o = rosen.optimizeUsingGA(population_size=200, iterations=1000)
+    # x, o = rosen.optimizeUsingDE(population_size=1000, iterations=1000)
+    # print('\nSolution :')
+    # print(x)
+    # print('Optimal Value :')
+    # print(o)
 
 if __name__ == '__main__':
     main()
