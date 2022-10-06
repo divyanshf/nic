@@ -24,6 +24,7 @@ class DE:
             X = np.random.uniform(self.bounds[0], self.bounds[1], self.dimension)
             self.population.append(X)
     
+    # Calculate fitness for every individual of the population
     def calculateFitnesses(self):
         self.fitnesses = []
         for p in self.population:
@@ -45,7 +46,7 @@ class DE:
         set_of_indices.add(target_index)
 
         # Sum of difference vectors
-        diff_sum = [0 for d in range(self.dimension)]
+        diff_vector = [0 for d in range(self.dimension)]
         for i in range(n_diff_vectors):
             diff_x1_index = self.randomIntWithExclude(set_of_indices)
             diff_x1 = self.population[diff_x1_index]
@@ -55,10 +56,10 @@ class DE:
             diff_x2 = self.population[diff_x2_index]
             set_of_indices.add(diff_x2_index)
 
-            diff_sum = diff_sum + (diff_x2 - diff_x1)
+            diff_vector = diff_vector + (diff_x2 - diff_x1)
 
         # Generate trial Vector
-        trial = (gamma * best) + ((1 - gamma) * target) + (self.beta * diff_sum)
+        trial = (gamma * best) + ((1 - gamma) * target) + (self.beta * diff_vector)
 
         # Get values under bounds
         for d in range(self.dimension):

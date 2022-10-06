@@ -65,14 +65,14 @@ class Function:
         print('Running differential evolution...')
 
         # Parameters
-        prob_recombination = 0.65
+        prob_recombination = 0.7
         beta = 0.5
-        n_diff_vectors = 3
+        n_diff_vectors = 1
         population_size = max(population_size, 2 * n_diff_vectors + 1)
         sample_size = population_size
         n_generations = iterations
-        gamma = 0
-        gamma_step = 1 / n_generations
+        gamma = 1
+        # gamma_step = 1 / n_generations
 
         # DE Object
         de = DE(self, self.dimension, sample_size, self.bounds, beta, prob_recombination)
@@ -89,7 +89,7 @@ class Function:
                 # Generate trial vector by mutating the parent
                 trial_vector = de.mutate(i, n_diff_vectors, gamma)
                 # Generate a child by crossover
-                child = de.exponentialCrossover(parent, trial_vector)
+                child = de.binomialCrossover(parent, trial_vector)
                 # Evaluate the fitness of the child
                 fitness_child = self.getFitness(child)
                 # Select the individual with better fitness for next generation
@@ -99,7 +99,7 @@ class Function:
                     new_population.append(parent)
 
             de.updatePopulation(new_population)
-            gamma = gamma + gamma_step
+            # gamma = gamma + gamma_step
         
         X_res = de.getResult()
         opt_value = self.eval(X_res)
