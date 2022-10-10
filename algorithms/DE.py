@@ -2,7 +2,7 @@
 # Mutation
 # Binomial/Exponential Crossover
 
-# DE rand-to-best / nv / z
+# DE best/1/bin
 
 import numpy as np
 

@@ -1,11 +1,13 @@
 from math import floor
+from algorithms.ABC import ABC
 from algorithms.DE import DE
 from algorithms.GA import GA
 import numpy as np
 
+
 class Function:
     def __init__(self, dimension, bounds):
-        print('Optimization Function : ', end='')
+        print("Optimization Function : ", end="")
 
         self.dimension = dimension
         self.bounds = bounds
@@ -14,26 +16,32 @@ class Function:
         self.var_len = 30
         self.soln_len = self.dimension * self.var_len
 
-
-
     # Get Fitness
     def getFitness(self, X):
         f = self.eval(X)
-        res = 99999 if f == 0 else 1/f
-        return res
-    
+        return 1 / (1 + f) if f >= 0 else 1 + abs(f)
+
     # Optimize Using Genetic Algorithms
     def optimizeUsingGA(self, population_size=100, iterations=1000):
-        print('Running genetic algorithm...')
+        print("Running genetic algorithm...")
         sample_size = population_size
         n_generations = iterations
 
         # Probabilities
-        prob_crossover=0.5
-        prob_mutation=0.05
+        prob_crossover = 0.5
+        prob_mutation = 0.05
 
         # Genetic Algorithm Object
-        ga = GA(self, self.dimension, sample_size, self.bounds, soln_len=self.soln_len, var_len=self.var_len, prob_crossover=prob_crossover, prob_mutation=prob_mutation)
+        ga = GA(
+            self,
+            self.dimension,
+            sample_size,
+            self.bounds,
+            soln_len=self.soln_len,
+            var_len=self.var_len,
+            prob_crossover=prob_crossover,
+            prob_mutation=prob_mutation,
+        )
 
         # Initialize Population
         ga.initializePopulation()
@@ -62,7 +70,7 @@ class Function:
 
     # Optimize Using Differential Evolution
     def optimizeUsingDE(self, population_size=100, iterations=1000):
-        print('Running differential evolution...')
+        print("Running differential evolution...")
 
         # Parameters
         prob_recombination = 0.7
@@ -72,10 +80,12 @@ class Function:
         sample_size = population_size
         n_generations = iterations
         gamma = 1
-        # gamma_step = 1 / n_generations
+        gamma_step = 1 / n_generations
 
         # DE Object
-        de = DE(self, self.dimension, sample_size, self.bounds, beta, prob_recombination)
+        de = DE(
+            self, self.dimension, sample_size, self.bounds, beta, prob_recombination
+        )
         de.initializePopulation()
 
         for _ in range(n_generations):
@@ -93,14 +103,49 @@ class Function:
                 # Evaluate the fitness of the child
                 fitness_child = self.getFitness(child)
                 # Select the individual with better fitness for next generation
-                if(fitness_child > fitness_parent):
+                if fitness_child > fitness_parent:
                     new_population.append(child)
                 else:
                     new_population.append(parent)
 
             de.updatePopulation(new_population)
             # gamma = gamma + gamma_step
-        
+
         X_res = de.getResult()
         opt_value = self.eval(X_res)
         return X_res, opt_value
+
+    # Optimize using Artificial Bee Colony
+    def optimizeUsingABC(self, swarm_size=100, iterations=1000):
+        # Parameters
+        colony_size = swarm_size
+        n_iterations = iterations
+
+        # Initialize the ABC Object
+        abc = ABC(self, self.dimension, colony_size, self.bounds)
+
+        # Initialize (Move the scouts)
+        abc.initializeFoodSources()
+        abc.calculateFitnesses()
+        abc.resetTrials()
+
+        # Memorize the best solution
+        best_fitness, best_soln = abc.getCurrentBest()
+
+        for _ in range(n_iterations):
+            # Employeed Bee Phase
+            abc.performEmployedBeePhase()
+            # Generate prob of selection of each solution before onlooker bee phase
+            prob_selection = abc.generateProbabilities()
+            # Onlooker Bee Phase
+            abc.performOnlookerBeePhase(prob_selection)
+            # Memorize the best soln
+            temp_fitness, temp_soln = abc.getCurrentBest()
+            if temp_fitness > best_fitness:
+                best_fitness = temp_fitness
+                best_soln = temp_soln
+            # Scout Bee Phase
+            abc.performScoutBeePhase()
+
+        opt_val = self.eval(best_soln)
+        return best_soln, opt_val
