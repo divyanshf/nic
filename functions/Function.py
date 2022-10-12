@@ -4,6 +4,8 @@ from algorithms.DE import DE
 from algorithms.GA import GA
 import numpy as np
 
+from algorithms.PSO import PSO
+
 
 class Function:
     def __init__(self, dimension, bounds):
@@ -117,6 +119,8 @@ class Function:
 
     # Optimize using Artificial Bee Colony
     def optimizeUsingABC(self, swarm_size=100, iterations=1000):
+        print("Running artificial bee colony...")
+
         # Parameters
         colony_size = swarm_size
         n_iterations = iterations
@@ -149,3 +153,27 @@ class Function:
 
         opt_val = self.eval(best_soln)
         return best_soln, opt_val
+
+    # Optimize using Particle Swarm Optimization
+    def optimizeUsingPSO(self, population_size=100, iterations=1000):
+        print("Running particle swarm optimization...")
+
+        # Parameters
+        sample_size = population_size
+        n_iterations = iterations
+
+        # Initialize the ABC Object
+        pso = PSO(self, self.dimension, sample_size, self.bounds)
+
+        # Initialize Base
+        pso.initializeAll()
+
+        # Generations
+        for _ in range(n_iterations):
+            for i in range(sample_size):
+                x_new = pso.generateNewSolution(i)
+                pso.updateSolution(x_new, i)
+
+        # Solution
+        return pso.getSolution()
+
